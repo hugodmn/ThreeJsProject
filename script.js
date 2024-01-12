@@ -184,9 +184,6 @@ window.addEventListener('resize', () => {
     renderer.setPixelRatio(window.devicePixelRatio);
 });
 
-const axesHelper = new THREE.AxesHelper(10);
-axesHelper.setColors(0xff0000, 0x00ff00, 0x0000ff)
-scene.add(axesHelper);
 
 const geometry = new THREE.SphereGeometry( 0.1, 32, 16 ); 
 const material = new THREE.MeshBasicMaterial( { color: 0xffff00 } ); 
@@ -213,14 +210,14 @@ light_2.position.set(-10, 0, 0);
 const light_helper_2 = new THREE.DirectionalLightHelper(light_2);
 light_2.target = sphere 
 scene.add(light_2);
-scene.add(light_helper_2);
+
 
 const light_3 = new THREE.DirectionalLight(0xffffff, 4);
 light_3.position.set(0, 0, -10);
 const light_helper_3 = new THREE.DirectionalLightHelper(light_3);
 light_3.target = sphere
 scene.add(light_3);
-scene.add(light_helper_3);
+
 
 
 const light_4 = new THREE.DirectionalLight(0xffffff, 2);
@@ -228,7 +225,7 @@ light_4.position.set(0, 0, 10);
 const light_helper_4 = new THREE.DirectionalLightHelper(light_3);
 light_4.target = sphere
 scene.add(light_4);
-scene.add(light_helper_4);
+
 
 camera.lookAt(sphere.position)
 sphere.visible = false;
