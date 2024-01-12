@@ -38,7 +38,7 @@ This project requires a browser that supports HTML5 and WebGL:
 
 ## Usage
 
-Access the web application through a compatible browser. The application is available [here](hugodmn.github.io/ThreeJsProject/).
+Access the web application through a compatible browser. The application is available [here](https://hugodmn.github.io/ThreeJsProject/).
 
 
 ## Acknowledgments

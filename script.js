@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+//import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 const startButton = document.getElementById('startButton');
@@ -18,7 +18,9 @@ let male_voice ;
 let female_voice; 
 let woman_speaking_bool = true
 let man_speaking_bool = false 
-var msg = new SpeechSynthesisUtterance();
+
+
+
 let generationInterval = null;
 let armMovement = 0.01;
 let is_speaking_bool = false;
@@ -32,6 +34,8 @@ let smile_opening = 0.5
 if (!"speechSynthesis" in window) {
 alert("Sorry, your browser doesn't support text to speech!");
 }
+
+
 
 async function initModelAndVoices() {
 
@@ -48,8 +52,6 @@ async function initModelAndVoices() {
                 stoi[item] = index;
             });
         
-
-
     list.forEach((item, index) => {
         itos[index] = item;
     });
@@ -62,7 +64,7 @@ async function initModelAndVoices() {
     // Opera 8.0+
     var isOpera = (!!window.opr && !!opr.addons) || !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
 
-// Firefox 1.0+
+    // Firefox 1.0+
     var isFirefox = typeof InstallTrigger !== 'undefined';
 
     // Safari 3.0+ "[object HTMLElementConstructor]" 
@@ -80,8 +82,6 @@ async function initModelAndVoices() {
     // Edge (based on chromium) detection
     var isEdgeChromium = isChrome && (navigator.userAgent.indexOf("Edg") != -1);
 
-
-    
     console.log("isOpera", isOpera)
     console.log("isFirefox", isFirefox)
     console.log("isSafari", isSafari)
@@ -102,15 +102,15 @@ async function initModelAndVoices() {
         male_voice = voices[0],// Fred EN-US
         female_voice = voices[111] // Kathy EN-US
     }
-    msg.voice = female_voice;
-    // msg.volume = 1; // From 0 to 1
-    // msg.rate = 1; // From 0.1 to 10
-    // msg.pitch = 2; // From 0 to 2
-    msg.lang = 'en';
 
+    if (isChrome){
+        male_voice = voices[0],
+        female_voice = voices[1]
+    }
 }
 
 
+// SCENE INITIALIZATION
 
 
 const scene = new THREE.Scene()
@@ -121,23 +121,24 @@ camera.position.y = 2
 
 
 
-// let utterance = new SpeechSynthesisUtterance();
-// speechSynthesis.speak(utterance);
-// Fetch the canvas element created in index.html, replace 'canvas' with the id of your canvas
 const canvas = document.getElementById('canvas');
 
 
-//const controls = new OrbitControls(camera, canvas);
 
 const loader = new GLTFLoader()
 
 let model_man;
 loader.load('images/hugo.glb', // .glb model
     function (gltf) { // callback
+        
         model_man = gltf.scene
         model_man.position.set(0.5, 0, 0)
         model_man.rotateY(13.5 * Math.PI / 8)
         scene.add(model_man)
+        console.log(model_man)
+        console.log(model_man.children[0].children[3].morphTargetInfluences[0].rotation)
+        model_man.children[0].children[0].children[0].children[0].children[0].children[1].rotation.y = -0.3
+        model_man.children[0].children[0].children[0].children[0].children[0].children[2].rotation.y = 0.3
     })
 
 let model_woman;
@@ -150,15 +151,12 @@ loader.load('images/marine.glb', // .glb model
         model_woman.rotateY(2.5 * Math.PI / 8)
         model_woman.children[0].children[3].morphTargetInfluences[0] = 1
         model_woman.children[0].children[3].morphTargetInfluences[1] = 1
-        // EYE
-        //model_woman.children[0].children[0].children[0].children[0].children[0].children[0].children[0].position.set(0,0.5,0)
-        //sconsole.log(model_woman.children[0].children[0].position.set(0,0.5,0))
-   
+        model_woman.children[0].children[0].children[0].children[0].children[0].children[1].rotation.y = -0.3
+        model_woman.children[0].children[0].children[0].children[0].children[0].children[2].rotation.y = 0.3
+  
     
         scene.add(model_woman)
     })
-
-
 
 
 
@@ -167,8 +165,7 @@ const renderer = new THREE.WebGLRenderer({
     canvas: canvas,
     // Antialiasing is used to smooth the edges of what is rendered
     antialias: true,
-    // Activate the support of transparency
-    // alpha: true
+
 });
 
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -246,28 +243,79 @@ function iter_movement() {
   }
 
 
-//   function animate() {
-//     console.log("is speaking", is_speaking_bool);
+  function animateArms(model, movement, inversion = false) {
+    // Shoulder movement only, for a more natural look
+    // Left shoulder
+    //console.log( model.children[0].children[0].children[0].children[0].children[0].children[1].children[0].rotation.x)
+    if (!inversion){ 
+        if ((model.children[0].children[0].children[0].children[0].children[0].children[1].rotation.x)>=0.85){
+        model.children[0].children[0].children[0].children[0].children[0].children[1].rotation.x -= movement ;
+        model.children[0].children[0].children[0].children[0].children[0].children[2].rotation.x -= movement;
 
-//     if (((model_woman) && (model_man)) && (is_speaking_bool)) {
-//         speak();
 
-//         let armMovement = Math.sin(Date.now() / 500) * 0.1; // Simple sine wave for movement
+        
+    
+    }
+}
+    else {
+    // Right shoulder
+        if ((model.children[0].children[0].children[0].children[0].children[0].children[2].rotation.x)<=1.5){
+        model.children[0].children[0].children[0].children[0].children[0].children[1].rotation.x += movement; // Opposite direction for symmetry
+        model.children[0].children[0].children[0].children[0].children[0].children[2].rotation.x += movement;
+    }
 
-//         if (woman_speaking_bool) {
-//             // Animate woman's arms
-//             animateArms(model_woman, armMovement);
-//         } else if (man_speaking_bool) {
-//             // Animate man's arms
-//             animateArms(model_man, armMovement);
-//         }
-//     }
 
-//     updateCamera();
-//     updateSubtitlePosition();
-//     renderer.render(scene, camera);
-//     requestAnimationFrame(animate);
-// }
+       
+    
+}
+    }
+
+    function animateHead(model, targetModel, inversion = false) {
+        if (model ) {
+            const head = model.children[0].children[0].children[0].children[0].children[0].children[0].children[0];
+            if (!inversion) {
+                const targetPosition = new THREE.Vector3();
+                targetModel.children[0].children[0].children[0].children[0].children[0].children[0].children[0].getWorldPosition(targetPosition);
+                head.lookAt(targetPosition);
+                //console.log("Head should look at: ", targetPosition);
+            } else {
+                head.rotation.set(0, 0, 0);
+                //console.log("Head should reset.");
+            }
+            // This line is just for debugging purposes and can be removed later.
+            head.updateMatrix();
+        }
+    }
+
+function animate_face(model, mouth_opening, smile_opening, inversion = false) {
+
+    if (inversion)
+    {
+    model.children[0].children[3].morphTargetInfluences[0] = 0
+
+    model.children[0].children[3].morphTargetInfluences[1] = 0
+    model.children[0].children[2].morphTargetInfluences[0] = 0
+    model.children[0].children[2].morphTargetInfluences[1] = 0
+    model.children[0].children[1].morphTargetInfluences[0] = 0
+    model.children[0].children[1].morphTargetInfluences[1] = 0
+    // model_man.children[0].children[5].morphTargetInfluences[1] = 0
+    model.children[0].children[4].morphTargetInfluences[0] = 0
+    model.children[0].children[4].morphTargetInfluences[1] = 0
+    }
+    else {
+    model.children[0].children[3].morphTargetInfluences[0] = mouth_opening
+    model.children[0].children[3].morphTargetInfluences[1] = smile_opening
+    model.children[0].children[1].morphTargetInfluences[0] = mouth_opening
+    model.children[0].children[1].morphTargetInfluences[1] = smile_opening
+    model.children[0].children[2].morphTargetInfluences[0] = mouth_opening
+    model.children[0].children[2].morphTargetInfluences[1] = smile_opening
+
+    model.children[0].children[4].morphTargetInfluences[0] = mouth_opening
+    model.children[0].children[4].morphTargetInfluences[1] = smile_opening
+
+    }
+
+}
 
 const animate = () => {
    
@@ -286,51 +334,22 @@ const animate = () => {
 
     animateArms(model_woman, armMovement);
     animateArms(model_man, armMovement, true);
-    model_man.children[0].children[3].morphTargetInfluences[0] = 0
+    animateHead(model_woman, model_man, true); // Woman turns head to man
+    animateHead(model_man, model_woman, false); // Man resets head position
 
-    model_man.children[0].children[3].morphTargetInfluences[1] = 0
-    model_man.children[0].children[2].morphTargetInfluences[0] = 0
-    model_man.children[0].children[2].morphTargetInfluences[1] = 0
-    model_man.children[0].children[1].morphTargetInfluences[0] = 0
-    model_man.children[0].children[1].morphTargetInfluences[1] = 0
-    // model_man.children[0].children[5].morphTargetInfluences[1] = 0
-    model_man.children[0].children[4].morphTargetInfluences[0] = 0
-    model_man.children[0].children[4].morphTargetInfluences[1] = 0
-    model_woman.children[0].children[3].morphTargetInfluences[0] = mouth_opening
-    model_woman.children[0].children[3].morphTargetInfluences[1] = smile_opening
-    model_woman.children[0].children[1].morphTargetInfluences[0] = mouth_opening
-    model_woman.children[0].children[1].morphTargetInfluences[1] = smile_opening
-    model_woman.children[0].children[2].morphTargetInfluences[0] = mouth_opening
-    model_woman.children[0].children[2].morphTargetInfluences[1] = smile_opening
-    // model_woman.children[0].children[5].morphTargetInfluences[0] = mouth_opening
-    // model_woman.children[0].children[5].morphTargetInfluences[1] = smile_opening
-    model_woman.children[0].children[4].morphTargetInfluences[0] = mouth_opening
-    model_woman.children[0].children[4].morphTargetInfluences[1] = smile_opening
+    animate_face(model_man, mouth_opening, smile_opening, true)
+    animate_face(model_woman, mouth_opening, smile_opening, false)
+    
 
     }
     if (!man_speaking_bool) {
     animateArms(model_man, armMovement);
     animateArms(model_woman, armMovement, true);
-    model_woman.children[0].children[3].morphTargetInfluences[0] = 0
-    model_woman.children[0].children[3].morphTargetInfluences[1] = 0
-    model_woman.children[0].children[2].morphTargetInfluences[0] = 0
-    model_woman.children[0].children[2].morphTargetInfluences[1] = 0
-    model_woman.children[0].children[1].morphTargetInfluences[0] = 0
-    model_woman.children[0].children[1].morphTargetInfluences[1] = 0
-    // model_woman.children[0].children[5].morphTargetInfluences[0] = 0
-    // model_woman.children[0].children[5].morphTargetInfluences[1] = 0
-    model_woman.children[0].children[4].morphTargetInfluences[0] = 0
-    model_woman.children[0].children[4].morphTargetInfluences[1] = 0
-    model_man.children[0].children[3].morphTargetInfluences[0] = mouth_opening
-    model_man.children[0].children[3].morphTargetInfluences[1] = smile_opening
-    model_man.children[0].children[1].morphTargetInfluences[0] = mouth_opening
-    model_man.children[0].children[1].morphTargetInfluences[1] = smile_opening
-    model_man.children[0].children[2].morphTargetInfluences[0] = mouth_opening
-    model_man.children[0].children[2].morphTargetInfluences[1] = smile_opening
-    // model_man.children[0].children[5].morphTargetInfluences[0] = mouth_opening
-    // model_man.children[0].children[5].morphTargetInfluences[1] = smile_opening
-    model_man.children[0].children[4].morphTargetInfluences[0] = mouth_opening
-    model_man.children[0].children[4].morphTargetInfluences[1] = smile_opening
+    animateHead(model_man, model_woman, true); // Man turns head to woman
+    animateHead(model_woman, model_man, false); // Woman resets head position
+
+    animate_face(model_man, mouth_opening, smile_opening, false)
+    animate_face(model_woman, mouth_opening, smile_opening, true)
     }
         }
 
@@ -343,43 +362,11 @@ const animate = () => {
 
 
 
-//animate();
-
-function animateArms(model, movement, inversion = false) {
-    // Shoulder movement only, for a more natural look
-    // Left shoulder
-    console.log( model.children[0].children[0].children[0].children[0].children[0].children[1].children[0].rotation.x)
-    if (!inversion){ 
-        if ((model.children[0].children[0].children[0].children[0].children[0].children[1].rotation.x)>=0.85){
-        model.children[0].children[0].children[0].children[0].children[0].children[1].rotation.x -= movement ;
-        model.children[0].children[0].children[0].children[0].children[0].children[2].rotation.x -= movement;
-
-        }
-        else {
-           // model.children[0].children[0].children[0].children[0].children[0].children[1].rotation.x += movement ;
-        }
-    }
-    else {
-    // Right shoulder
-        if ((model.children[0].children[0].children[0].children[0].children[0].children[2].rotation.x)<=1.5){
-        model.children[0].children[0].children[0].children[0].children[0].children[1].rotation.x += movement; // Opposite direction for symmetry
-        model.children[0].children[0].children[0].children[0].children[0].children[2].rotation.x += movement;
-
-    }
-        else 
-        {
-            //model.children[0].children[0].children[0].children[0].children[0].children[2].rotation.x += movement; // Opposite direction for symmetry
-        }
-    }
-}
-
-
-
 
 async function generateText(input) {
 
 
-    //console.log("input", input)
+
 
     
     const inputTensor = new ort.Tensor('int32', new Int32Array(input), [1, input.length]);
@@ -390,20 +377,12 @@ async function generateText(input) {
     logits = output['output'].data.slice(-1076);
 
 
-    // const probs = softmax(logits);
-
-    // // Sample the next token using multinomial sampling
-    // const nextToken = multinomial(probs);
     let output_data = logits
    // const output_data = output.output.data;
 
     const sum = output_data.reduce((a, b) => a + Math.exp(b), 0);
     const normalized = output_data.map(x => Math.exp(x) / sum);
     
-
-    //! Sampling from the distribution
-    // Cumulative distribution function
-    // console.log("CDF");
     const cdf = [];
     let sum2 = 0;
     for (let i = 0; i < normalized.length; i++) {
@@ -429,9 +408,6 @@ async function generateText(input) {
         speakerChange = true; // Set the flag for a speaker change
     }
 
-
-
-  
     return nextCharId;
 
 
@@ -534,12 +510,15 @@ function wrapText(context, text, x, y, maxWidth, lineHeight) {
     });
 }
 
-
+window.utterances = [];
 
 async function voice_speak() {
     if (is_speaking_bool || ReplyText.length === 0) {
         return;
     }
+    window.utterances.shift();
+    var msg = new SpeechSynthesisUtterance();
+    window.utterances.push(msg);
 
     is_speaking_bool = true;
     console.log("is speaking", is_speaking_bool, ReplyText);
@@ -560,38 +539,23 @@ async function voice_speak() {
 
     // Setup msg
     msg.text = textToSpeak;
+    msg.lang = "en"
 
 
-    // msg.onerror = (event) => {
-    //         is_speaking_bool = false;
-    //         // resolve();
-    //         voice_speak(); // Process next in queue
-    // };
+    msg.onend = (event) => {
+        console.log("Speech finished", event);
+        is_speaking_bool = false;
+        // resolve();
+        //voice_speak(); // Process next in queue
+    };
 
+    console.log("msg:", msg);
 
-    // let estimatedTime = estimateSpeechTime(text);
+    msg.onerror = (event) => {
+        console.log("Speech error", event);
+    };
 
-
-
-    // // Fallback to reset `is_speaking_bool` if `onend` doesn't fire
-    // setTimeout(() => {
-    //     if (is_speaking_bool) {
-    //         is_speaking_bool = false;
-    //         // resolve();
-    //         voice_speak(); // Process next in queue
-    //     }
-    // }, estimatedTime);
-
-    return new Promise(resolve => {
-        msg.onend = () => {
-            console.log("Speech finished");
-            is_speaking_bool = false;
-            resolve();
-            voice_speak(); // Process next in queue
-        };
-
-        window.speechSynthesis.speak(msg);
-    });
+    window.speechSynthesis.speak(msg);
 
 }
 
