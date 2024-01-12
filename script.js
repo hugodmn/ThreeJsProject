@@ -8,7 +8,7 @@ let speakerChange = false ;
 let stoi = {};
 let itos = {};
 let model = null;
-let contextMaxLength = 256 ;
+let contextMaxLength = 124 ;
 let logits = [];
 let modelPath = '';
 let ReplyText = [];
@@ -20,8 +20,9 @@ let woman_speaking_bool = true
 let man_speaking_bool = false 
 var msg = new SpeechSynthesisUtterance();
 let generationInterval = null;
-
+let armMovement = 0.01;
 let is_speaking_bool = false;
+ 
 
 let mouth_movement = 0.3 
 let smile_movement = 0.1
@@ -40,7 +41,7 @@ async function initModelAndVoices() {
         isGenerating = false;
     }
     
-    modelPath = 'ONNX_saved/bpe/NOPT_exported_model.onnx';
+    modelPath = 'ONNX_saved/bpe/NOPT_exported_model.quant.onnx';
     const list = ["<begin>","<spkchg>","<unk>","information</w>", "government</w>", "something</w>", "different</w>", "including</w>", "important</w>", "ational</w>", "because</w>", "through</w>", "between</w>", "owever,</w>", "without</w>", "against</w>", "another</w>", "ations</w>", "ation.</w>", "people</w>", "should</w>", "ation,</w>", "you're</w>", "before</w>", "tional</w>", "around</w>", "ording</w>", "really</w>", "ential</w>", "ending</w>", "during</w>", "ation</w>", "about</w>", "their</w>", "tions</w>", "which</w>", "ating</w>", "would</w>", "other</w>", "thing</w>", "ement</w>", "ative</w>", "tion.</w>", "aking</w>", "there</w>", "don't</w>", "could</w>", "first</w>", "after</w>", "where</w>", "ently</w>", "ility</w>", "ember</w>", "tion,</w>", "think</w>", "ities</w>", "these</w>", "right</w>", "ments</w>", "using</w>", "owing</w>", "tical</w>", "ether</w>", "while</w>", "being</w>", "going</w>", "ally,</w>", "ready</w>", "iting</w>", "might</w>", "ately</w>", "ually</w>", "still</w>", "ished</w>", "ment.</w>", "uring</w>", "that</w>", "your</w>", "tion</w>", "with</w>", "have</w>", "ally</w>", "will</w>", "ting</w>", "from</w>", "ated</w>", "able</w>", "this</w>", "ment</w>", "king</w>", "ing.</w>", "ing,</w>", "ence</w>", "ents</w>", "sion</w>", "they</w>", "ance</w>", "more</w>", "like</w>", "ther</w>", "ings</w>", "ning</w>", "tive</w>", "also</w>", "ical</w>", "This</w>", "when</w>", "time</w>", "ving</w>", "some</w>", "into</w>", "ates</w>", "been</w>", "what</w>", "make</w>", "just</w>", "ying</w>", "ough</w>", "ased</w>", "than</w>", "them</w>", "at's</w>", "ound</w>", "were</w>", "over</w>", "most</w>", "ding</w>", "ent.</w>", "want</w>", "only</w>", "ever</w>", "work</w>", "need</w>", "very</w>", "port</w>", "said</w>", "sive</w>", "ight</w>", "used</w>", "it's</w>", "side</w>", "ited</w>", "ship</w>", "ity.</w>", "self</w>", "ular</w>", "ers.</w>", "even</w>", "ers,</w>", "then</w>", "dn't</w>", "interest", "back</w>", "ters</w>", "take</w>", "ered</w>", "help</w>", "ress</w>", "sure</w>", "ent,</w>", "ency</w>", "ures</w>", "know</w>", "good</w>", "many</w>", "such</w>", "ince</w>", "It's</w>", "ways</w>", "ties</w>", "down</w>", "ants</w>", "come</w>", "ity,</w>", "less</w>", "much</w>", "line</w>", "on't</w>", "ause</w>", "ould</w>", "fore</w>", "ople</w>", "the</w>", "ing</w>", "and</w>", "you</w>", "for</w>", "ers</w>", "ate</w>", "ent</w>", "are</w>", "es.</w>", "es,</w>", "ted</w>", "ity</w>", "The</w>", "one</w>", "all</w>", "can</w>", "ter</w>", "est</w>", "ed.</w>", "was</w>", "ure</w>", "age</w>", "ary</w>", "not</w>", "ess</w>", "ies</w>", "ous</w>", "er.</w>", "ain</w>", "ely</w>", "ect</w>", "er,</w>", "ite</w>", "ed,</w>", "ice</w>", "but</w>", "has</w>", "ast</w>", "ard</w>", "out</w>", "ame</w>", "ase</w>", "ial</w>", "ant</w>", "le,</w>", "tic</w>", "its</w>", "any</w>", "le.</w>", "end</w>", "als</w>", "his</w>", "ans</w>", "ong</w>", "ors</w>", "our</w>", "e's</w>", "ose</w>", "old</w>", "day</w>", "ach</w>", "develop", "ory</w>", "ine</w>", "ere</w>", "get</w>", "ves</w>", "You</w>", "who</w>", "ome</w>", "ell</w>", "ick</w>", "ish</w>", "n't</w>", "on,</w>", "ist</w>", "ple</w>", "ree</w>", "ful</w>", "on.</w>", "ved</w>", "own</w>", "ade</w>", "ned</w>", "new</w>", "ise</w>", "use</w>", "ood</w>", "ily</w>", "her</w>", "had</w>", "ons</w>", "ly,</w>", "how</w>", "ile</w>", "ack</w>", "may</w>", "ake</w>", "ust</w>", "al.</w>", "al,</w>", "ear</w>", "it.</w>", "ows</w>", "ese</w>", "en,</w>", "red</w>", "ton</w>", "tly</w>", "'re</w>", "ked</w>", "en.</w>", "ver</w>", "way</w>", "ual</w>", "ly.</w>", "ore</w>", "ult</w>", "ministr", "organiz", "two</w>", "ave</w>", "ill</w>", "ost</w>", "ich</w>", "t's</w>", "ed</w>", "es</w>", "er</w>", "to</w>", "s.</w>", "e.</w>", "of</w>", "s,</w>", "al</w>", "in</w>", "on</w>", "e,</w>", "an</w>", "'s</w>", "ly</w>", "or</w>", "en</w>", "is</w>", "le</w>", "ve</w>", "at</w>", "it</w>", "ts</w>", "y.</w>", "ic</w>", "th</w>", "y,</w>", "as</w>", "be</w>", ".:</w>", "t.</w>", "se</w>", "ow</w>", "ch</w>", "t,</w>", "ad</w>", "el</w>", "ay</w>", "ar</w>", "et</w>", "by</w>", "ks</w>", "a,</w>", "am</w>", "ll</w>", "ce</w>", "ty</w>", "a.</w>", "ue</w>", "d.</w>", "ut</w>", "produc", "ey</w>", "up</w>", "he</w>", ").</w>", "id</w>", "Americ", "om</w>", "us</w>", "respon", "commun", "experi", "d,</w>", "provid", "if</w>", "um</w>", "ds</w>", "ep</w>", "friend", "),</w>", "possib", "includ", "partic", "If</w>", "so</w>", "proble", "o,</w>", "we</w>", "op</w>", "contin", "consid", "do</w>", "contro", "'t</w>", "system", "ew</w>", "ir</w>", "ession", "my</w>", "school", "person", "It</w>", "resear", "me</w>", "il</w>", "compan", "k.</w>", "e?</w>", "st</w>", "re</w>", "inform", "govern", "differ", "import", "owever", ".</w>", "s</w>", ",</w>", "e</w>", "t</w>", "a</w>", "y</w>", "d</w>", "k</w>", "?</w>", "o</w>", "n</w>", ")</w>", ":</w>", "ation", "!</w>", "inter", "m</w>", "l</w>", "p</w>", "I</w>", "chang", "under", "'</w>", "w</w>", "speci", "h</w>", "0</w>", ";</w>", "offic", "struc", "f</w>", "every", "i</w>", "appro", "x</w>", "direc", "stand", "gener", "incre", "progr", "busin", "resid", "avail", "techn", "minut", "secon", "examp", "estig", "small", "repor", "r</w>", "again", "overn", "organ", "chool", "betwe", "</w>", "comp", "ther", "tion", "pres", "form", "sion", "over", "year", "ment", "cont", "comm", "coun", "enti", "ough", "ound", "play", "serv", "tran", "star", "vers", "plac", "olog", "requ", "inst", "work", "high", "publ", "ligh", "some", "proc", "them", "plic", "prof", "posi", "cent", "elec", "port", "chil", "numb", "sist", "buil", "mark", "foll", "stat", "poin", ".com", "hand", "you'", "back", "medi", "stud", "righ", "curr", "tain", "cour", "happ", "trac", "self", "rele", "oper", "tern", "ustr", "ship", "ques", "your", "disc", "call", "read", "worl", "aliz", "empl", "char", "expl", "heal", "ight", "ever", "coll", "Trum", "down", "fort", "http", "ounc", "larg", "pers", "lear", "dist", "anti", "thor", "prom", "atur", "rest", "ener", "with", "diff", "prob", "thin", "peri", "resp", "istr", "stem", "clud", "elop", "esti", "Amer", "con", "ent", "ing", "per", "pro", "ter", "tic", "all", "rec", "ver", "est", "ain", "and", "pre", "res", "ear", "end", "par", "enc", "ess", "anc", "ell", "com", "str", "our", "ist", "tim", "fin", "dis", "acc", "ard", "for", "cre", "are", "ass", "ill", "ang", "ast", "att", "ail", "min", "ind", "wor", "ach", "ure", "fac", "ati", "mon", "day", "inv", "man", "oun", "ong", "ack", "rel", "des", "ore", "int", "mil", "fic", "der", "pol", "tiv", "sup", "tur", "ous", "app", "gre", "por", "sec", "eng", "ant", "201", "loo", "cri", "ann", "out", "ari", "ord", "pos", "row", "und", "ust", "let", "cer", "lin", "ish", "dec", "Con", "igh", "sid", "ali", "reg", "fer", "pri", "sub", "exp", "sur", "the", "leg", "cor", "loc", "ire", "ect", "amp", "you", "mar", "ser", "iti", "mis", "art", "ful", "mat", "ick", "ens", "rem", "sig", "arg", "Com", "eli", "wat", "sel", "ash", "boo", "any", "tri", "itt", "col", "eci", "nec", "bre", "ple", "det", "dep", "emb", "inc", "can", "vid", "sol", "but", "fam", "sit", "duc", "abl", "ock", "air", "adv", "car", "eff", "cle", "on-", "aff", "ort", "ber", "wee", "fir", "bec", "big", "hel", "oll", "cap", "add", "sti", "ven", "her", "ros", "ath", "ext", "Pro", "him", "lat", "arm", "oul", "ret", "adi", "lik", "doc", "vir", "dat", "off", "oci", "get", "urr", "pow", "pur", "exc", "fun", "bet", "nam", "run", "sib", "hol", "lif", "pop", "eas", "jec", "esp", "fil", "dri", "Rep", "Mar", "ici", "spe", "tre", "You", "uni", "own", "arr", "dem", "tal", "tog", "gam", "lim", "not", "tec", "say", "tor", "set", "ott", "foo", "bor", "er-", "mak", "erc", "ign", "Uni", "umb", "ubl", "dev", "mer", "way", "fri", "thr", "org", "cho", "shi", "bus", "som", "ttp", "in", "re", "al", "en", "er", "st", "or", "ic", "th", "an", "at", "on", "ar", "ch", "ac", "it", "el", "as", "ad", "is", "le", "ag", "di", "un", "am", "et", "es", "ec", "ul", "em", "id", "om", "ti", "ap", "ro", "sh", "ri", "ed", "li", "tr", "im", "ol", "ab", "us", "op", "ur", "il", "si", "ex", "pl", "ou", "se", "sp", "su", "ow", "qu", "vi", "Th", "ep", "gr", "ir", "ot", "ut", "cl", "oo", "mo", "oc", "um", "ne", "de", "av", "ev", "co", "St", "pr", "be", "ak", "fe", "ob", "In", "wh", "os", "ig", "Ch", "ay", "e-", "me", "bo", "te", "sc", "bl", "ph", "au", "dr", "Wh", "we", "gi", "fl", "of", "ha", "br", "up", "he", "00", "aw", "fi", "to", "do", "pe", "fr", "iz", "no", "ip", "po", "ni", "af", "uc", "tu", "lo", "An", "og", "ew", "ef", "eg", "yp", "cr", "gl", "wr", "19", "ra", "ff", "ud", "Al", "kn", "ei", "gh", "go", "ov", "ug", "En", "gu", "I'", "od", "sk", "oy", "sa", "ke", "mi", "cc", "y-", "bu", "Un", "ve", "sl", "ma", "sm", "sy", "wi", "ub", "Tr", "la", "Ad", "Re", "mp", "tw", "sw", "--", "ok", "ll", "bi", "dg", "Ex", "Ar", "20", "-1", "ey", "Sh", "a-", "Fr", "gg", "az", "s-", "..", "ww", "hn", "tt", "fu", "mu", "s", "t", "p", "e", "c", "m", "b", "-", "i", "f", "n", "h", "l", "d", "S", "r", "g", "a", "u", "o", "v", "w", "y", "M", "k", "C", "A", "P", "B", "D", "H", ".", "R", "T", "F", "W", "1", "L", "N", "G", "j", "2", "E", "O", "(", "I", "z", "3", "5", "J", "4", "x", "K", "6", "8", "0", "'", "U", "V", "7", ":", "9", ",", "Y", "Q", "Z", "!", "X", ")", "?", "q", ";"];
         
     list.forEach((item, index) => {
@@ -52,7 +53,6 @@ async function initModelAndVoices() {
     list.forEach((item, index) => {
         itos[index] = item;
     });
-    contextMaxLength = 256;
     context = [stoi['<begin>']];
     console.log("Loading model...");
     model = await ort.InferenceSession.create(modelPath, { executionProviders: ['wasm'], graphOptimizationLevel: 'all' });
@@ -91,13 +91,17 @@ async function initModelAndVoices() {
     console.log("isEdgeChromium", isEdgeChromium)
 
     var voices = window.speechSynthesis.getVoices();
-    console.log(voices)
+    console.log("voices", voices)
 
     if (isSafari){
         male_voice = voices[30],// Fred EN-US
         female_voice = voices[43] // Kathy EN-US
     }
 
+    if (isFirefox){
+        male_voice = voices[0],// Fred EN-US
+        female_voice = voices[111] // Kathy EN-US
+    }
     msg.voice = female_voice;
     // msg.volume = 1; // From 0 to 1
     // msg.rate = 1; // From 0.1 to 10
@@ -227,18 +231,20 @@ scene.add(light_4);
 scene.add(light_helper_4);
 
 camera.lookAt(sphere.position)
+sphere.visible = false;
 
 
 
 
 
 
-function speak() {
+function iter_movement() {
     if ((mouth_opening >= 1)||(mouth_opening <= 0)){mouth_movement = - mouth_movement}
     if ((smile_opening >= 1)||(smile_opening <= 0)){smile_movement = - smile_movement}
-    
+
     mouth_opening = mouth_opening + mouth_movement
     smile_opening = smile_opening + smile_movement
+
     
   }
 
@@ -268,20 +274,21 @@ function speak() {
 
 const animate = () => {
    
-    console.log("is speaking", is_speaking_bool)
-    console.log(model_man)
+    // console.log("is speaking", is_speaking_bool)
+    // console.log(model_man)
 
     if (((model_woman)&&(model_man))&&(is_speaking_bool)){
 
 
-    speak()
-    let armMovement = Math.sin(Date.now() / 1000) * 0.05; // Slower and less pronounced movement
+    iter_movement()
+
 
      
 
     if (!woman_speaking_bool) {
 
     animateArms(model_woman, armMovement);
+    animateArms(model_man, armMovement, true);
     model_man.children[0].children[3].morphTargetInfluences[0] = 0
 
     model_man.children[0].children[3].morphTargetInfluences[1] = 0
@@ -306,6 +313,7 @@ const animate = () => {
     }
     if (!man_speaking_bool) {
     animateArms(model_man, armMovement);
+    animateArms(model_woman, armMovement, true);
     model_woman.children[0].children[3].morphTargetInfluences[0] = 0
     model_woman.children[0].children[3].morphTargetInfluences[1] = 0
     model_woman.children[0].children[2].morphTargetInfluences[0] = 0
@@ -340,13 +348,30 @@ const animate = () => {
 
 //animate();
 
-function animateArms(model, movement) {
+function animateArms(model, movement, inversion = false) {
     // Shoulder movement only, for a more natural look
     // Left shoulder
-    model.children[0].children[0].children[0].children[0].children[0].children[1].rotation.x = movement;
 
+    if (!inversion){ 
+        if ((model.children[0].children[0].children[0].children[0].children[0].children[1].rotation.x)>=0.85){
+        model.children[0].children[0].children[0].children[0].children[0].children[1].rotation.x -= movement ;
+        model.children[0].children[0].children[0].children[0].children[0].children[2].rotation.x -= movement;
+        }
+        else {
+           // model.children[0].children[0].children[0].children[0].children[0].children[1].rotation.x += movement ;
+        }
+    }
+    else {
     // Right shoulder
-    model.children[0].children[0].children[0].children[0].children[0].children[2].rotation.x = -movement; // Opposite direction for symmetry
+        if ((model.children[0].children[0].children[0].children[0].children[0].children[2].rotation.x)<=1.5){
+        model.children[0].children[0].children[0].children[0].children[0].children[1].rotation.x += movement; // Opposite direction for symmetry
+        model.children[0].children[0].children[0].children[0].children[0].children[2].rotation.x += movement;
+    }
+        else 
+        {
+            //model.children[0].children[0].children[0].children[0].children[0].children[2].rotation.x += movement; // Opposite direction for symmetry
+        }
+    }
 }
 
 
@@ -401,7 +426,7 @@ async function generateText(input) {
         }
     }
     if (itos[nextCharId] === '<spkchg>') {
-        console.log("Speaker change")
+        // console.log("Speaker change")
         speakerChange = true; // Set the flag for a speaker change
     }
 
@@ -459,7 +484,7 @@ function createSubtitleTexture(text) {
         subtitleSprite.renderOrder = 999; // Set a high render order
         subtitleSprite = new THREE.Sprite(spriteMaterial);
         subtitleSprite.position.set(0, 1.5, 2); // Adjusted position towards the bottom
-        subtitleSprite.scale.set(5, 1.25, 1);
+        subtitleSprite.scale.set(4, 1.25, 1);
         scene.add(subtitleSprite);
     } else {
         // Update texture for existing sprite
@@ -519,7 +544,7 @@ async function voice_speak() {
 
     is_speaking_bool = true;
     let textToSpeak = ReplyText.shift();
-    console.log("textToSpeak", textToSpeak)
+    //console.log("textToSpeak", textToSpeak)
     createSubtitleTexture(textToSpeak);
     // Switch speaking flags and set voice accordingly
     if (man_speaking_bool) {
@@ -529,7 +554,7 @@ async function voice_speak() {
         msg.voice = female_voice;
        // woman_speaking_bool = true;
     }
-    console.log(man_speaking_bool, woman_speaking_bool)
+    // console.log(man_speaking_bool, woman_speaking_bool)
     man_speaking_bool = !man_speaking_bool;
     woman_speaking_bool = !woman_speaking_bool;
 
@@ -550,50 +575,54 @@ async function voice_speak() {
 
 
 
-async function displayGeneratedText() {
+async function appendNextChar() {
     //let context = stringToIntArray(displayedText);
 
 
+    isGenerating = true;
+ 
 
-    async function appendNextChar() {
+
+    //console.log(context.length)
 
 
-        if (context.length >= contextMaxLength) {
-            context.shift();
-        }
+    if (context.length >= contextMaxLength) {
+        context.shift();
+    }
+
+
+    const nextCharId = await generateText(context);
+    context.push(nextCharId);
+    
+    if (!speakerChange) {
+    
+    text += itos[nextCharId].replace('</w>', ' ').replace('<begin>', '');
+
+    }
+    else {
+    if (text.length > 0) {
+    ReplyText.push(text);
+    text = '';
+
+
+    voice_speak(); // Trigger speaking
+    speakerChange = false;
+    }
 
     
-        const nextCharId = await generateText(context);
-        context.push(nextCharId);
-        
-        if (!speakerChange) {
-        
-        text += itos[nextCharId].replace('</w>', ' ').replace('<begin>', '');
-        console.log("text", text)
-        }
-        else {
-        if (text.length > 0) {
-        ReplyText.push(text);
-        text = '';
-
-   
-        voice_speak(); // Trigger speaking
-        speakerChange = false;
-        }
-
-        }
-
     }
-        generationInterval = setInterval(appendNextChar, 100);
-        isGenerating = true;
+    generationInterval = setTimeout(appendNextChar, 100);
     }
+        
+        
+    
     
 
     
 initModelAndVoices();
 
 startButton.addEventListener('click', () => {
-    displayGeneratedText();
+    appendNextChar();
     animate();
     voice_speak();
     startButton.style.display = 'none'; // Hide the start button
