@@ -198,20 +198,20 @@ textureEquirec.colorSpace = THREE.SRGBColorSpace;
 
 scene.background = textureEquirec;
 
-const light = new THREE.DirectionalLight(0xffffff, 8);
+const light = new THREE.DirectionalLight(0xffffff, 4);
 const light_helper = new THREE.DirectionalLightHelper(light);
 light.position.set(0, 10, 0);
 scene.add(light);
 //scene.add(light_helper);
 
-const light_2 = new THREE.DirectionalLight(0xffffff, 8);
+const light_2 = new THREE.DirectionalLight(0xffffff, 4);
 light_2.position.set(-10, 0, 0);
 const light_helper_2 = new THREE.DirectionalLightHelper(light_2);
 light_2.target = sphere 
 scene.add(light_2);
 scene.add(light_helper_2);
 
-const light_3 = new THREE.DirectionalLight(0xffffff, 8);
+const light_3 = new THREE.DirectionalLight(0xffffff, 4);
 light_3.position.set(0, 0, -10);
 const light_helper_3 = new THREE.DirectionalLightHelper(light_3);
 light_3.target = sphere
@@ -219,7 +219,7 @@ scene.add(light_3);
 scene.add(light_helper_3);
 
 
-const light_4 = new THREE.DirectionalLight(0xffffff, 3);
+const light_4 = new THREE.DirectionalLight(0xffffff, 2);
 light_4.position.set(0, 0, 10);
 const light_helper_4 = new THREE.DirectionalLightHelper(light_3);
 light_4.target = sphere
@@ -243,43 +243,111 @@ function speak() {
   }
 
 
+//   function animate() {
+//     console.log("is speaking", is_speaking_bool);
 
+//     if (((model_woman) && (model_man)) && (is_speaking_bool)) {
+//         speak();
+
+//         let armMovement = Math.sin(Date.now() / 500) * 0.1; // Simple sine wave for movement
+
+//         if (woman_speaking_bool) {
+//             // Animate woman's arms
+//             animateArms(model_woman, armMovement);
+//         } else if (man_speaking_bool) {
+//             // Animate man's arms
+//             animateArms(model_man, armMovement);
+//         }
+//     }
+
+//     updateCamera();
+//     updateSubtitlePosition();
+//     renderer.render(scene, camera);
+//     requestAnimationFrame(animate);
+// }
 
 const animate = () => {
    
     console.log("is speaking", is_speaking_bool)
-
+    console.log(model_man)
 
     if (((model_woman)&&(model_man))&&(is_speaking_bool)){
 
 
     speak()
+    let armMovement = Math.sin(Date.now() / 1000) * 0.05; // Slower and less pronounced movement
 
+     
 
     if (!woman_speaking_bool) {
+
+    animateArms(model_woman, armMovement);
     model_man.children[0].children[3].morphTargetInfluences[0] = 0
+
     model_man.children[0].children[3].morphTargetInfluences[1] = 0
+    model_man.children[0].children[2].morphTargetInfluences[0] = 0
+    model_man.children[0].children[2].morphTargetInfluences[1] = 0
+    model_man.children[0].children[1].morphTargetInfluences[0] = 0
+    model_man.children[0].children[1].morphTargetInfluences[1] = 0
+    // model_man.children[0].children[5].morphTargetInfluences[1] = 0
+    model_man.children[0].children[4].morphTargetInfluences[0] = 0
+    model_man.children[0].children[4].morphTargetInfluences[1] = 0
     model_woman.children[0].children[3].morphTargetInfluences[0] = mouth_opening
     model_woman.children[0].children[3].morphTargetInfluences[1] = smile_opening
+    model_woman.children[0].children[1].morphTargetInfluences[0] = mouth_opening
+    model_woman.children[0].children[1].morphTargetInfluences[1] = smile_opening
+    model_woman.children[0].children[2].morphTargetInfluences[0] = mouth_opening
+    model_woman.children[0].children[2].morphTargetInfluences[1] = smile_opening
+    // model_woman.children[0].children[5].morphTargetInfluences[0] = mouth_opening
+    // model_woman.children[0].children[5].morphTargetInfluences[1] = smile_opening
+    model_woman.children[0].children[4].morphTargetInfluences[0] = mouth_opening
+    model_woman.children[0].children[4].morphTargetInfluences[1] = smile_opening
+
     }
     if (!man_speaking_bool) {
+    animateArms(model_man, armMovement);
     model_woman.children[0].children[3].morphTargetInfluences[0] = 0
     model_woman.children[0].children[3].morphTargetInfluences[1] = 0
+    model_woman.children[0].children[2].morphTargetInfluences[0] = 0
+    model_woman.children[0].children[2].morphTargetInfluences[1] = 0
+    model_woman.children[0].children[1].morphTargetInfluences[0] = 0
+    model_woman.children[0].children[1].morphTargetInfluences[1] = 0
+    // model_woman.children[0].children[5].morphTargetInfluences[0] = 0
+    // model_woman.children[0].children[5].morphTargetInfluences[1] = 0
+    model_woman.children[0].children[4].morphTargetInfluences[0] = 0
+    model_woman.children[0].children[4].morphTargetInfluences[1] = 0
     model_man.children[0].children[3].morphTargetInfluences[0] = mouth_opening
     model_man.children[0].children[3].morphTargetInfluences[1] = smile_opening
+    model_man.children[0].children[1].morphTargetInfluences[0] = mouth_opening
+    model_man.children[0].children[1].morphTargetInfluences[1] = smile_opening
+    model_man.children[0].children[2].morphTargetInfluences[0] = mouth_opening
+    model_man.children[0].children[2].morphTargetInfluences[1] = smile_opening
+    // model_man.children[0].children[5].morphTargetInfluences[0] = mouth_opening
+    // model_man.children[0].children[5].morphTargetInfluences[1] = smile_opening
+    model_man.children[0].children[4].morphTargetInfluences[0] = mouth_opening
+    model_man.children[0].children[4].morphTargetInfluences[1] = smile_opening
     }
         }
 
-
+    updateCamera();
+    updateSubtitlePosition();
     renderer.render(scene, camera);
     requestAnimationFrame(animate)
+    
 }
 
 
 
 //animate();
 
+function animateArms(model, movement) {
+    // Shoulder movement only, for a more natural look
+    // Left shoulder
+    model.children[0].children[0].children[0].children[0].children[0].children[1].rotation.x = movement;
 
+    // Right shoulder
+    model.children[0].children[0].children[0].children[0].children[0].children[2].rotation.x = -movement; // Opposite direction for symmetry
+}
 
 
 
@@ -345,6 +413,102 @@ async function generateText(input) {
 
 }
 
+let targetPosition = new THREE.Vector3(); // This will be our target position
+
+function updateCamera() {
+    if (woman_speaking_bool) {
+        targetPosition.copy(model_woman.position).add(new THREE.Vector3(0.175, 2, 1));
+    } else if (man_speaking_bool) {
+        targetPosition.copy(model_man.position).add(new THREE.Vector3(-0.175, 2, 1));
+    }
+
+    camera.position.lerp(targetPosition, 0.05); // Smooth transition, adjust the 0.05 for speed
+    camera.lookAt(sphere.position);
+}
+
+
+let subtitleSprite;
+
+function createSubtitleTexture(text) {
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+
+    canvas.width = 1024;
+    canvas.height = 256;
+
+    context.fillStyle = '#000000';
+    context.font = '28px Arial';
+    context.textAlign = 'center';
+    context.textBaseline = 'middle';
+    context.clearRect(0, 0, canvas.width, canvas.height);
+
+    context.strokeStyle = '#FFFFFF'; // White border
+    context.lineWidth = 2; // Border width
+
+    wrapText(context, text, canvas.width / 2, canvas.height / 2, canvas.width - 20, 28);
+
+    const texture = new THREE.CanvasTexture(canvas);
+
+    if (!subtitleSprite) {
+        // Create sprite for first time
+        const spriteMaterial = new THREE.SpriteMaterial({ 
+            map: texture,
+            depthTest: false // Disable depth test
+        });
+        subtitleSprite = new THREE.Sprite(spriteMaterial);
+        subtitleSprite.renderOrder = 999; // Set a high render order
+        subtitleSprite = new THREE.Sprite(spriteMaterial);
+        subtitleSprite.position.set(0, 1.5, 2); // Adjusted position towards the bottom
+        subtitleSprite.scale.set(5, 1.25, 1);
+        scene.add(subtitleSprite);
+    } else {
+        // Update texture for existing sprite
+        subtitleSprite.material.map = texture;
+        subtitleSprite.material.needsUpdate = true;
+    }
+}
+
+function updateSubtitlePosition() {
+    if (subtitleSprite) {
+        const distance = 2; // Distance in front of the camera
+        const subtitlePosition = new THREE.Vector3(0, -0.5, -distance); // Adjust Y position as needed
+        subtitleSprite.position.copy(camera.position).add(subtitlePosition);
+        subtitleSprite.lookAt(camera.position);
+    }
+}
+
+function wrapText(context, text, x, y, maxWidth, lineHeight) {
+    var sentences = text.split('. ');
+    var startY = y;
+
+    sentences.forEach((sentence, index) => {
+        var words = sentence.split(' ');
+        var line = '';
+
+        words.forEach((word) => {
+            var testLine = line + word + ' ';
+            var metrics = context.measureText(testLine);
+            var testWidth = metrics.width;
+            if (testWidth > maxWidth && line !== '') {
+                context.strokeText(line, x, startY); // Stroke for border
+                context.fillText(line, x, startY); // Fill text
+                line = word + ' ';
+                startY += lineHeight;
+            } else {
+                line = testLine;
+            }
+        });
+
+        if (line !== '') {
+            context.strokeText(line, x, startY); // Stroke for border
+            context.fillText(line, x, startY); // Fill text
+        }
+
+        if (index < sentences.length - 1) {
+            startY += lineHeight; // Extra line height for a new sentence
+        }
+    });
+}
 
 
 
@@ -355,7 +519,8 @@ async function voice_speak() {
 
     is_speaking_bool = true;
     let textToSpeak = ReplyText.shift();
-
+    console.log("textToSpeak", textToSpeak)
+    createSubtitleTexture(textToSpeak);
     // Switch speaking flags and set voice accordingly
     if (man_speaking_bool) {
         msg.voice = male_voice;
@@ -403,7 +568,7 @@ async function displayGeneratedText() {
         
         if (!speakerChange) {
         
-        text += itos[nextCharId].replace('</w>', ' ');
+        text += itos[nextCharId].replace('</w>', ' ').replace('<begin>', '');
         console.log("text", text)
         }
         else {
@@ -426,10 +591,12 @@ async function displayGeneratedText() {
 
     
 initModelAndVoices();
+
 startButton.addEventListener('click', () => {
     displayGeneratedText();
     animate();
     voice_speak();
+    startButton.style.display = 'none'; // Hide the start button
 });
 
     
