@@ -4,7 +4,6 @@ This web application demonstrates the integration of 3D animations driven by rea
 
 ![App Screenshot](images/screen.png)
 
-The text-to-speech system is based on a custom transformer model, trained with various tokenization strategies to adapt to different speech patterns.
 
 ## Model Parameters
 
